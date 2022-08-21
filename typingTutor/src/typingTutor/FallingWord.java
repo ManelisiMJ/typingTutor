@@ -1,16 +1,19 @@
 package typingTutor;
 
+import java.util.concurrent.*;
+
 public class FallingWord {
 	private String word; // the word
 	private int x; //position - width
 	private int y; // postion - height
 	private int maxY; //maximum height
+	private int maxX;
 	private boolean dropped; //flag for if user does not manage to catch word in time
+	private boolean hungry;
 	
 	private int fallingSpeed; //how fast this word is
 	private static int maxWait=1000;
 	private static int minWait=100;
-
 	public static WordDictionary dict;
 	
 	FallingWord() { //constructor with defaults
@@ -32,6 +35,13 @@ public class FallingWord {
 		this.x=x; //only need to set x, word is at top of screen at start
 		this.maxY=maxY;
 	}
+
+	FallingWord(String text,int maxX, int y, boolean hungry) { 
+		this(text);
+		this.maxX=maxX; 
+		this.y = y;
+		this.hungry = hungry;	//hungry words don't need the hungryLatch
+	}
 	
 	public static void increaseSpeed( ) {
 		minWait+=50;
@@ -46,14 +56,22 @@ public class FallingWord {
 
 // all getters and setters must be synchronized
 	public synchronized  void setY(int y) {
-		if (y>maxY) {
-			y=maxY;
-			dropped=true; //user did not manage to catch this word
+		if (!hungry){
+			if (y>maxY) {
+				y=maxY;
+				dropped=true; //user did not manage to catch normal word
+			}
 		}
 		this.y=y;
 	}
 	
 	public synchronized  void setX(int x) {
+		if (hungry){
+			if (x>maxX) {
+				x=maxX;
+				dropped=true; //user did not manage to catch hungry word
+			}
+		}
 		this.x=x;
 	}
 	
@@ -106,9 +124,19 @@ public class FallingWord {
 	public synchronized  void drop(int inc) {
 		setY(y+inc);
 	}
+
+	public synchronized void slide(int inc){
+			setX(x+inc);
+	}
 	
 	public synchronized  boolean dropped() {
 		return dropped;
+	}
+
+	//This method doesn't need synchronization 
+	//hungry is set once for the special HungryWord and is only read afterwards
+	public boolean isHungry(){
+		return hungry;
 	}
 
 }

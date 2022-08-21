@@ -15,6 +15,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 		private FallingWord[] words;
 		private int noWords;
+		public int maxWidth;
 		private final static int borderWidth=25; //appearance - border
 
 		GamePanel(FallingWord[] words, int maxY,	
@@ -59,6 +60,7 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 		
 		public int getValidXpos() {
+			maxWidth = getWidth();
 			int width = getWidth()-borderWidth*4;
 			int x= (int)(Math.random() * width);
 			return x;

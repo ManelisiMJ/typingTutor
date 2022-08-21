@@ -47,17 +47,20 @@ public class CatchWord extends Thread {
 		}
 
 		//When loop is done, update Score and remove FallingWord only if matching word(s) found
-		if (temp.length >= 1){
-			FallingWord lowest;
+		if (temp.size() >= 1){
+			FallingWord lowest = null;
 			double lowestY = 0d;
 
-			for (FallingWord word: temp){ 	//Loop through all matching words to determine the lowest
+			for (FallingWord word: temp){ 	//Loop through all matching words to determine the lowest... Hungry word takes precedence
+				if (word.isHungry()){
+					lowest = word;
+					break;
+				}
 				if (word.getY() > lowestY){
 					lowestY = word.getY();	//Set new lowest word
 					lowest = word;		
 				}
 			}
-
 			//Reset the lowest word and update score
 			lowest.resetWord();
 			System.out.println( " score! '" + target); //for checking
