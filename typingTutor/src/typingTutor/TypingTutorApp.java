@@ -196,7 +196,7 @@ public class TypingTutorApp {
      		wrdShft[i].start();
      	}
 
-		FallingWord hungryWord=new FallingWord(dict.getNewWord(),gameWindow.maxWidth, (int)(yLimit/2), true); //Creating hungry word
+		FallingWord hungryWord=new FallingWord(dict.getNewWord(),gameWindow.maxWidth, (int)(Math.random()*(yLimit-50)+50), true); //Creating hungry word
 		words[noWords-1] = hungryWord;
 		HungryWordMover hMover = new HungryWordMover(hungryWord, dict, score, done, pause);
 		hMover.start();

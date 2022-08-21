@@ -39,13 +39,19 @@ public class GamePanel extends JPanel implements Runnable {
 		   //draw the words
 		    if (!started.get()) {
 		    	g.setFont(new Font("Arial", Font.BOLD, 26));
-				g.drawString("Type all the words before they hit the red zone,press enter after each one.",borderWidth*2,height/2);	
-		    	
+				g.drawString("Type all the words before they hit the red zone,press enter after each one.",borderWidth*2,height/2);		    	
 		    }
 		    else if (!done.get()) {
-		    	for (int i=0;i<noWords;i++){	    	
-		    		g.drawString(words[i].getWord(),words[i].getX()+borderWidth,words[i].getY());	
-		    	}
+		    	for (int i=0;i<noWords;i++){	 
+					if (words[i].isHungry()){
+						g.setColor(Color.green);
+						g.drawString(words[i].getWord(),words[i].getX()+borderWidth,words[i].getY());	
+					} 	
+					else{
+						g.setColor(Color.black);
+						g.drawString(words[i].getWord(),words[i].getX()+borderWidth,words[i].getY());	
+					}
+				}  		
 		    	g.setColor(Color.lightGray); //change colour of pen
 		    	g.fillRect(borderWidth,0,width,borderWidth);
 		   }
