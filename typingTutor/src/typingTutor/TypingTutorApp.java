@@ -1,6 +1,9 @@
 package typingTutor;
 
 import javax.swing.*;
+
+import typingTutor.FallingWord;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -199,7 +202,7 @@ public class TypingTutorApp {
 		}
 		//create threads to move them
 	    for (int i=0;i<noWords-1;i++) {
-	    	wrdShft[i] = new WordMover(words[i],dict,score,startLatch, done,pause);
+	    	wrdShft[i] = new WordMover(words[i],dict,score,startLatch, done,pause, hungryWord);
 	    }
         //word movers waiting on starting line
      	for (int i=0;i<noWords-1;i++) {
@@ -231,8 +234,8 @@ public static void main(String[] args) {
 		pause = new AtomicBoolean(false);
 		won = new AtomicBoolean(false);
 		
-		totalWords=24;
-		noWords=6;
+		totalWords=30;
+		noWords=15;
 		dict= new WordDictionary();
 		
 		//deal with command line arguments

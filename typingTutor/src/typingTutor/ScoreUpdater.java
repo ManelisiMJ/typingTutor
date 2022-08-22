@@ -29,7 +29,7 @@ public class ScoreUpdater  implements Runnable {
                 caught.setText("Caught: " + score.getCaught() + "    ");
                 missed.setText("Missed:" +  score.getMissed()+ "    " );
                 scoreView.setText("Score:" + score.getScore()+ "    " );  //setText is thread safe (I think)
-				if ((score.getMissed())>=3) {
+				if ((score.getMissed())>=50) {
 		               caught.setText("Caught: " + score.getCaught() + "    ");
 		               missed.setText("Missed:" +  score.getMissed()+ "    " );
 		               scoreView.setText("Score:" + score.getScore()+ "    " );  //setText is thread safe (I think)

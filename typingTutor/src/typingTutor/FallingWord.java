@@ -138,6 +138,11 @@ public class FallingWord {
 			setX(maxX+100);
 	}
 
+	public synchronized void dropNormalWord(){
+		if (!isHungry())
+			setY(maxY+10);
+	}
+
 	//This method doesn't need synchronization 
 	//hungry is set once for the special HungryWord and is only read afterwards
 	public boolean isHungry(){
