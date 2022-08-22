@@ -40,7 +40,7 @@ public class FallingWord {
 		this(text);
 		this.maxX=maxX; 
 		this.y = y;
-		this.hungry = hungry;	//hungry words don't need the hungryLatch
+		this.hungry = hungry;	
 	}
 	
 	public static void increaseSpeed( ) {
@@ -68,7 +68,7 @@ public class FallingWord {
 	public synchronized  void setX(int x) {
 		if (hungry){
 			if (x>maxX) {
-				x=maxX;
+				x=maxX+100;		
 				dropped=true; //user did not manage to catch hungry word
 			}
 		}
@@ -131,6 +131,11 @@ public class FallingWord {
 	
 	public synchronized  boolean dropped() {
 		return dropped;
+	}
+
+	public synchronized void dropHungryWord(){
+		if (isHungry())
+			setX(maxX+100);
 	}
 
 	//This method doesn't need synchronization 
