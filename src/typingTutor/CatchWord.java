@@ -1,6 +1,8 @@
 package typingTutor;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
 
 //Thread to monitor the word that has been typed.
 public class CatchWord extends Thread {
@@ -31,17 +33,41 @@ public class CatchWord extends Thread {
 	}
 	
 	public void run() {
-		int i=0;
-		while (i<noWords) {		
-			while(pause.get()) {};
-			if (words[i].matchWord(target)) {
-				System.out.println( " score! '" + target); //for checking
-				score.caughtWord(target.length());	
-				//FallingWord.increaseSpeed();
-				break;
-			}
-		   i++;
+		if (words[noWords-1].matchWord(target)){		//HungryWord is always last in the words array		
+			words[noWords-1].setWord("HungryWord found");		//Change the word so that it is not compared again and again
+			System.out.println( " score HungryWord! '" + target);
+			score.caughtWord(target.length());
+			words[noWords-1].dropHungryWord();
 		}
+
+		else{
+			int i=0;
+			ArrayList<FallingWord> temp = new ArrayList<FallingWord>();
+			while (i<noWords-1) {			//Loop through other words		
+				while(pause.get()) {};
+				if (words[i].matchWord(target))  
+					temp.add(words[i]);	//Place all matching words in the temp array
+			   i++;
+			}
+	
+			//When loop is done, update Score and remove FallingWord only if matching word(s) found
+			if (temp.size() >= 1){
+				FallingWord lowest = null;
+				double lowestY = 0d;
+	
+				for (FallingWord word: temp){ 	//Loop through all matching words to determine the lowest. Hungry word takes precedence
+					if (word.getY() > lowestY){
+						lowestY = word.getY();	//Set new lowest word
+						lowest = word;		
+					}
+				}
+				//Reset the lowest word and update score
+				lowest.resetWord();
+				System.out.println( " score! '" + target); //for checking
+				score.caughtWord(target.length());
+			}
+		}
+
 		
 	}	
 }

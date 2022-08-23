@@ -1,7 +1,6 @@
 package typingTutor;
 
 import javax.swing.*;
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +38,7 @@ public class TypingTutorApp {
 	static ScoreUpdater scoreD ;
 	static Thread gameWindowThread;
 	static Thread scoreThread;
+	static FallingWord hungryWord = null;
 	
 	public static void setupGUI(int frameX,int frameY,int yLimit) {
 		// Frame init and dimensions
@@ -99,6 +99,15 @@ public class TypingTutorApp {
 		    	won.set(false);
 		    	done.set(false);
 		    	started.set(true);
+				//Creaet HungryWord and HungryWordMover
+				{	if (hungryWord != null)
+						hungryWord.dropHungryWord();	//Drop previous threads so that they stop running
+					hungryWord=new FallingWord(dict.getNewWord(),gameWindow.maxWidth, (int)(Math.random()*(yLimit-100)+50), true); //Creating hungry word
+					words[noWords-1] = hungryWord;
+					HungryWordMover hMover = new HungryWordMover(hungryWord, dict, score, done, pause, words);
+					hMover.start();
+				}
+
 		    	if (pause.get()) { //this is a restart from pause
 		    		pause.set(false);
 		    	} else { //user quit last game
@@ -185,17 +194,17 @@ public class TypingTutorApp {
 	public static void createWordMoverThreads() {
 		score.reset();
 	  	//initialize shared array of current words with the words for this game
-		for (int i=0;i<noWords;i++) {
+		for (int i=0;i<noWords-1;i++) {
 			words[i]=new FallingWord(dict.getNewWord(),gameWindow.getValidXpos(),yLimit);
 		}
 		//create threads to move them
-	    for (int i=0;i<noWords;i++) {
-	    		wrdShft[i] = new WordMover(words[i],dict,score,startLatch,done,pause);
+	    for (int i=0;i<noWords-1;i++) {
+	    	wrdShft[i] = new WordMover(words[i],dict,score,startLatch, done,pause, hungryWord);
 	    }
         //word movers waiting on starting line
-     	for (int i=0;i<noWords;i++) {
-     		wrdShft[i] .start();
-     	}
+     	for (int i=0;i<noWords-1;i++) {
+     		wrdShft[i].start();
+		}
 	}
 	
 public static String[] getDictFromFile(String filename) {
@@ -255,4 +264,3 @@ public static void main(String[] args) {
     	createThreads();
        	}
 	}
-

@@ -36,13 +36,12 @@ public class ScoreUpdater  implements Runnable {
 					   done.set(true); //game ends when missed 3
 					   won.set(false);
 				} else if (score.getCaught()>=maxWords) {
-					   done.set(true); //game ends when missed 3
+					   done.set(true); //game ends when caught all words
 					   won.set(true);
 		               caught.setText("Caught: " + score.getCaught() + "    ");
 		               missed.setText("Missed:" +  score.getMissed()+ "    " );
 		               scoreView.setText("Score:" + score.getScore()+ "    " );  
 				}
-
         }
     }
 }
