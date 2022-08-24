@@ -9,9 +9,9 @@ public class FallingWord {
 	private int maxY; //maximum height
 	private int maxX;
 	private boolean dropped; //flag for if user does not manage to catch word in time
-	private boolean hungry;
+	private boolean hungry;	 //determine if it's a HungryWord or not
 	
-	private int fallingSpeed; //how fast this word is
+	private int fallingSpeed; //how fast this word is falling
 	private static int maxWait=1000;
 	private static int minWait=100;
 	public static WordDictionary dict;
@@ -36,7 +36,7 @@ public class FallingWord {
 		this.maxY=maxY;
 	}
 
-	FallingWord(String text,int maxX, int y, boolean hungry) { 
+	FallingWord(String text,int maxX, int y, boolean hungry) { //includes flag to determine if it's a HungryWord
 		this(text);
 		this.maxX=maxX; 
 		this.y = y;
@@ -55,17 +55,17 @@ public class FallingWord {
 	
 
 // all getters and setters must be synchronized
-	public synchronized  void setY(int y) {
-		if (!hungry){
+	public synchronized  void setY(int y) {		//used to move normal words
+		if (!hungry){			
 			if (y>maxY) {
 				y=maxY;
-				dropped=true; //user did not manage to catch normal word
+				dropped=true; //user did not catch normal word
 			}
 		}
 		this.y=y;
 	}
 	
-	public synchronized  void setX(int x) {
+	public synchronized  void setX(int x) {		//used to move HungryWord
 		if (hungry){
 			if (x>maxX) {
 				x=maxX+100;		
@@ -114,7 +114,7 @@ public class FallingWord {
 	public synchronized boolean matchWord(String typedText) {
 		//System.out.println("Matching against: "+text);
 		if (typedText.equals(this.word)) {
-			//resetWord();  //Remove this and call it independently in CatchWord when right FallingWord is found
+			//resetWord();  //Removed this to call it independently in CatchWord when right FallingWord is found because HungryWord is not reset
 			return true;
 		}
 		else
@@ -125,6 +125,7 @@ public class FallingWord {
 		setY(y+inc);
 	}
 
+	//Added method to slide the HungryWord across the screen
 	public synchronized void slide(int inc){
 			setX(x+inc);
 	}
@@ -133,19 +134,20 @@ public class FallingWord {
 		return dropped;
 	}
 
+	//Added method to remove the HungryWord
 	public synchronized void dropHungryWord(){
 		if (isHungry())
 			setX(maxX+100);
 	}
 
+	//Added method to remove normal words that collide with HungryWord
 	public synchronized void dropNormalWord(){
 		if (!isHungry())
 			setY(maxY+10);
 	}
 
-	//This method doesn't need synchronization 
-	//hungry is set once for the special HungryWord and is only read afterwards
-	public boolean isHungry(){
+	//Added getter for hungry property
+	public synchronized boolean isHungry(){
 		return hungry;
 	}
 

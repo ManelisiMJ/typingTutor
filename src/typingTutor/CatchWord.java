@@ -33,11 +33,12 @@ public class CatchWord extends Thread {
 	}
 	
 	public void run() {
+		//Compare the typed word with hungry word first
 		if (words[noWords-1].matchWord(target)){		//HungryWord is always last in the words array		
-			words[noWords-1].setWord("HungryWord found");		//Change the word so that it is not compared again and again
+			words[noWords-1].setWord("HungryWord found");		//Change the hungry word to indicate it has been found
 			System.out.println( " score HungryWord! '" + target);
-			score.caughtWord(target.length());
-			words[noWords-1].dropHungryWord();
+			score.caughtWord(target.length());					//Update score
+			words[noWords-1].dropHungryWord();					//Take it out of the screen
 		}
 
 		else{
@@ -50,7 +51,7 @@ public class CatchWord extends Thread {
 			   i++;
 			}
 	
-			//When loop is done, update Score and remove FallingWord only if matching word(s) found
+			//When loop is done, check if matching word(s) found
 			if (temp.size() >= 1){
 				FallingWord lowest = null;
 				double lowestY = 0d;
@@ -61,9 +62,10 @@ public class CatchWord extends Thread {
 						lowest = word;		
 					}
 				}
+
 				//Reset the lowest word and update score
 				lowest.resetWord();
-				System.out.println( " score! '" + target); //for checking
+				System.out.println( " score! '" + target); 
 				score.caughtWord(target.length());
 			}
 		}

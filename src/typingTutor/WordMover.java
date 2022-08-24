@@ -24,11 +24,15 @@ public class WordMover extends Thread {
 		hungryWord = hungry;
 	}
 	
+	/**
+	 * Determines whether or not the FallingWord is overlapping with the HungryWord
+	 * @return true if the FallingWord overlaps with the HungryWord
+	 */
 	public synchronized boolean overLap(){
 		int myWordEndX = myWord.getX() + myWord.getWord().length()*13;
 		int hungryEndX = hungryWord.getX() + hungryWord.getWord().length()*13;
 		int myWordMid = (myWordEndX - myWord.getX())/2;
-		boolean overLapX = false, overLapY =false; 
+		boolean overLapX = false, overLapY =false, overLapXMid = false; 
 
 		//If the y value of myWord falls in the range [hungryWord.getY()-15; hungryWord.getY()+15] then remove it
 		if (myWord.getY() >= hungryWord.getY()-15 && myWord.getY() <= hungryWord.getY()+15)
@@ -37,13 +41,20 @@ public class WordMover extends Thread {
 		//The myWord has a startX = word.getX() and an EndX calculated using the length of the word and a mid calculated using startX and endX
 		//If the word's start X is in range [hungryWord.getX; hungryWord.endX] or 
 		//If the word's end X is in range [hungryWord.getX; hungryWord.endX] then it has bumped into the hungry word
-		//plus exceptional case for long myWord and short hungry words where myWord startX and endX don't fall within hungry word range of X
+		
 		if ((myWordEndX >= hungryWord.getX() && myWordEndX<=hungryEndX) || (myWord.getX() >= hungryWord.getX() 
 		&& myWord.getX()<=hungryEndX))
-			overLapX = true || (myWordMid>=hungryWord.getX() && myWordMid<=hungryEndX);
-		return overLapX && overLapY;
+			overLapX = true;
+
+		//plus exceptional case for long myWord and short hungry words where myWord startX and endX don't fall within hungry word range of X
+		if (myWordMid>=hungryWord.getX() && myWordMid<=hungryEndX){
+			overLapXMid = true;
+		}
+
+		return overLapY && (overLapX || overLapXMid);
 	}
 	
+
 	public void run() {
 		//System.out.println(myWord.getWord() + " falling speed = " + myWord.getSpeed());
 		try {
@@ -55,16 +66,14 @@ public class WordMover extends Thread {
 		} //wait for other threads to start
 		System.out.println(myWord.getWord() + " started" );
 		while (!done.get()) {				
-			//animate the word
 			while (!myWord.dropped() && !done.get()) {
-				    myWord.drop(10);
-
-					if (!hungryWord.getWord().equals("HungryWord found")){	//If hungry word is still in play
-						if (overLap()){
+					if (!hungryWord.getWord().equals("HungryWord found")){	//If HungryWord is still in play
+						if (overLap()){			//normal word overlaps with HungryWord
 							System.out.println(myWord.getWord()+" Colided with hungry word!");
-							myWord.dropNormalWord();
+							myWord.dropNormalWord();		//Remove the normal word
 						}
 					}
+					myWord.drop(10);		//Drop the word
 
 					try {
 						sleep(myWord.getSpeed());
@@ -75,7 +84,7 @@ public class WordMover extends Thread {
 					while(pause.get()&&!done.get()) {};
 			}
 			if (!done.get() && myWord.dropped()) {
-				score.missedWord();
+				score.missedWord();		//normal word fallen out of play
 				myWord.resetWord();
 			}
 			myWord.resetWord();

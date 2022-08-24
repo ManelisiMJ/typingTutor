@@ -101,10 +101,10 @@ public class TypingTutorApp {
 		    	started.set(true);
 				//Creaet HungryWord and HungryWordMover
 				{	if (hungryWord != null)
-						hungryWord.dropHungryWord();	//Drop previous threads so that they stop running
+						hungryWord.dropHungryWord();	//Drop previous hungry word threads so that thread stops running
 					hungryWord=new FallingWord(dict.getNewWord(),gameWindow.maxWidth, (int)(Math.random()*(yLimit-100)+50), true); //Creating hungry word
 					words[noWords-1] = hungryWord;
-					HungryWordMover hMover = new HungryWordMover(hungryWord, dict, score, done, pause, words);
+					HungryWordMover hMover = new HungryWordMover(hungryWord, dict, score, done, pause);
 					hMover.start();
 				}
 
