@@ -1,5 +1,4 @@
 package typingTutor;
-
 import java.nio.channels.OverlappingFileLockException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,22 +12,17 @@ public class HungryWordMover extends Thread {
 	private AtomicBoolean pause; 
 	private Score score;
 	
-	public HungryWordMover( FallingWord word) {
-		hungryWord = word;
-	}
-	
-	public HungryWordMover( FallingWord word,WordDictionary dict, Score score,AtomicBoolean d, AtomicBoolean p) {
+	public HungryWordMover( FallingWord word, Score score,AtomicBoolean d, AtomicBoolean p) {
 		hungryWord = word;
 		this.score=score;
 		this.done=d;
 		this.pause=p;
-		this.words = words;
 	}
 	
 	public void run() {
 		System.out.println("HUNGRY WORD "+hungryWord.getWord() + " started" );
 		while (!done.get()) {				
-			while (!hungryWord.dropped() && !done.get()) {	//While falling word is still in play
+			while (!hungryWord.dropped() && !done.get()) {	//While hungry word is still in play
 					try {
 						sleep(hungryWord.getSpeed());	
 					} catch (InterruptedException e) {

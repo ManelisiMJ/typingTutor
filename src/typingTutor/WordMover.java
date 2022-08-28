@@ -29,31 +29,34 @@ public class WordMover extends Thread {
 	 * @return true if the FallingWord overlaps with the HungryWord
 	 */
 	public synchronized boolean overLap(){
-		int myWordEndX = myWord.getX() + myWord.getWord().length()*13;
-		int hungryEndX = hungryWord.getX() + hungryWord.getWord().length()*13;
-		int myWordMid = (myWordEndX - myWord.getX())/2;
-		boolean overLapX = false, overLapY =false, overLapXMid = false; 
-
+		AtomicBoolean overLapX , overLapY, overLapXMid; 
+		overLapX = new AtomicBoolean(false);
+		overLapY = new AtomicBoolean(false);
+		overLapXMid = new AtomicBoolean(false);
+		int myWordEndX = myWord.getX() + myWord.getWord().length()*13 +3 ; 
+		int myWordMid = (myWordEndX + myWord.getX())/2;
 		//If the y value of myWord falls in the range [hungryWord.getY()-15; hungryWord.getY()+15] then remove it
-		if (myWord.getY() >= hungryWord.getY()-15 && myWord.getY() <= hungryWord.getY()+15)
-			overLapY = true;
-
+		synchronized(myWord){
+			if (myWord.getY() >= hungryWord.getY()-12 && myWord.getY() <= hungryWord.getY()+15)
+				overLapY.set(true);
+		}
 		//The myWord has a startX = word.getX() and an EndX calculated using the length of the word and a mid calculated using startX and endX
 		//If the word's start X is in range [hungryWord.getX; hungryWord.endX] or 
 		//If the word's end X is in range [hungryWord.getX; hungryWord.endX] then it has bumped into the hungry word
-		
-		if ((myWordEndX >= hungryWord.getX() && myWordEndX<=hungryEndX) || (myWord.getX() >= hungryWord.getX() 
-		&& myWord.getX()<=hungryEndX))
-			overLapX = true;
+		synchronized(hungryWord){
+			//Calculate hungry word's end x inside synchronized block as it may change
+			int hungryEndX = hungryWord.getX() + hungryWord.getWord().length()*13 +3 ; 
 
-		//plus exceptional case for long myWord and short hungry words where myWord startX and endX don't fall within hungry word range of X
-		if (myWordMid>=hungryWord.getX() && myWordMid<=hungryEndX){
-			overLapXMid = true;
+			if ((myWordEndX >= hungryWord.getX() && myWordEndX<=hungryEndX) || (myWord.getX() >= hungryWord.getX() 
+			&& myWord.getX()<=hungryEndX))
+				overLapX.set(true);
+
+			//Exceptional case for long myWord and short hungry words where myWord startX and endX don't fall within hungry word range of X
+			if (myWordMid>=hungryWord.getX() && myWordMid<=hungryEndX)
+				overLapXMid.set(true);
 		}
-
-		return overLapY && (overLapX || overLapXMid);
+		return overLapY.get() && (overLapX.get() || overLapXMid.get());
 	}
-	
 
 	public void run() {
 		//System.out.println(myWord.getWord() + " falling speed = " + myWord.getSpeed());
@@ -67,21 +70,23 @@ public class WordMover extends Thread {
 		System.out.println(myWord.getWord() + " started" );
 		while (!done.get()) {				
 			while (!myWord.dropped() && !done.get()) {
-					if (!hungryWord.getWord().equals("HungryWord found")){	//If HungryWord is still in play
+				myWord.drop(10);		//Drop the word
+				
+				if (!hungryWord.getWord().equals("HungryWord found")){	//If HungryWord is still in play
+					synchronized(this){	//Check-then-act
 						if (overLap()){			//normal word overlaps with HungryWord
 							System.out.println(myWord.getWord()+" Colided with hungry word!");
 							myWord.dropNormalWord();		//Remove the normal word
 						}
 					}
-					myWord.drop(10);		//Drop the word
-
-					try {
-						sleep(myWord.getSpeed());
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					};		
-					while(pause.get()&&!done.get()) {};
+				}
+				try {
+					sleep(myWord.getSpeed());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				};		
+				while(pause.get()&&!done.get()) {};
 			}
 			if (!done.get() && myWord.dropped()) {
 				score.missedWord();		//normal word fallen out of play

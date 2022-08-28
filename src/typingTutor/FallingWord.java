@@ -143,12 +143,10 @@ public class FallingWord {
 	//Added method to remove normal words that collide with HungryWord
 	public synchronized void dropNormalWord(){
 		if (!isHungry())
-			setY(maxY+10);
+			setY(maxY+20);
 	}
 
-	//Added getter for hungry property
 	public synchronized boolean isHungry(){
 		return hungry;
 	}
-
 }

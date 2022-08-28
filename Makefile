@@ -3,25 +3,27 @@
 # Manelisi Ncube
 
 .SUFFIXES: .java .class
-BINDIR=bin/typingTutor
-SRCDIR=src/typingTutor
-JAVAC=/usr/bin/javac
+BINDIR=bin/typingTutor/
+SRCDIR=src/typingTutor/
 
 $(BINDIR)%.class:$(SRCDIR)%.java
-	$(JAVAC) -d $(BINDIR) -cp . $(SRCDIR)/*.java
+	javac -d bin/ -cp . $(SRCDIR)*.java
 
-#Classes for the VaccineArrayApp
+
 CLASSES=WordDictionary.class Score.class FallingWord.class CatchWord.class WordMover.class HungryWordMover.class GamePanel.class ScoreUpdater.class TypingTutorApp.class
 	       
-CLASS_FILES=$(CLASSES:%.class=$(BINDIR)/%.class)
+CLASS_FILES=$(CLASSES:%.class=$(BINDIR)%.class)
 
 default: $(CLASS_FILES) 
 
+# Getting arguments from console 
+args = `arg="$(filter-out $@,$(MAKECMDGOALS))" && echo $${arg:-${1}}`
+
 #Remove all class files
 clean:
-	rm $(BINDIR)/*.class
+	rm $(BINDIR)*.class
 
 	
-#Run option for the VaccineBSTAPp
+#Run TypingTutorApp
 run: $(CLASS_FILES)
-	java -cp bin typingTutor.TypingTutorApp
+	@java -cp bin typingTutor.TypingTutorApp $(call args)

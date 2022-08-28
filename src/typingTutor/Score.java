@@ -34,10 +34,15 @@ public class Score {
 	}
 
 	synchronized public void caughtWord(int length) {
-		caughtWords++;
-		gameScore+=length;
-		//Potential interleaving because of compound action Thread 1 might return gameScore while Thread 2 is 
-		//in the middle of gameScore+=length;
+		//caughtWords++;
+		//gameScore+=length;
+		//Both statements are compound actions which need synchronization to become atomic
+		synchronized(this){
+			gameScore+=length;
+		}
+		synchronized (this){
+			gameScore+=length;
+		}
 	}
 
 	synchronized public void reset() {

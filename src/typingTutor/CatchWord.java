@@ -62,14 +62,11 @@ public class CatchWord extends Thread {
 						lowest = word;		
 					}
 				}
-
 				//Reset the lowest word and update score
 				lowest.resetWord();
 				System.out.println( " score! '" + target); 
 				score.caughtWord(target.length());
 			}
-		}
-
-		
+		}		
 	}	
 }

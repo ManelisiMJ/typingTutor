@@ -20,7 +20,7 @@ public class ScoreUpdater  implements Runnable {
         scoreView = s;
         this.score=score;
         done=d;
-         won=w;
+        won=w;
         maxWords=max;
     }
 	
@@ -29,18 +29,20 @@ public class ScoreUpdater  implements Runnable {
                 caught.setText("Caught: " + score.getCaught() + "    ");
                 missed.setText("Missed:" +  score.getMissed()+ "    " );
                 scoreView.setText("Score:" + score.getScore()+ "    " );  //setText is thread safe (I think)
-				if ((score.getMissed())>=3) {
-		               caught.setText("Caught: " + score.getCaught() + "    ");
-		               missed.setText("Missed:" +  score.getMissed()+ "    " );
-		               scoreView.setText("Score:" + score.getScore()+ "    " );  //setText is thread safe (I think)
-					   done.set(true); //game ends when missed 3
-					   won.set(false);
-				} else if (score.getCaught()>=maxWords) {
-					   done.set(true); //game ends when caught all words
-					   won.set(true);
-		               caught.setText("Caught: " + score.getCaught() + "    ");
-		               missed.setText("Missed:" +  score.getMissed()+ "    " );
-		               scoreView.setText("Score:" + score.getScore()+ "    " );  
+				synchronized(this){
+					if ((score.getMissed())>=3) {
+						caught.setText("Caught: " + score.getCaught() + "    ");
+						missed.setText("Missed:" +  score.getMissed()+ "    " );
+						scoreView.setText("Score:" + score.getScore()+ "    " );  //setText is thread safe (I think)
+						done.set(true); //game ends when missed 3
+						won.set(false);
+					} else if (score.getCaught()>=maxWords) {
+						done.set(true); //game ends when caught all words
+						won.set(true);
+						caught.setText("Caught: " + score.getCaught() + "    ");
+						missed.setText("Missed:" +  score.getMissed()+ "    " );
+						scoreView.setText("Score:" + score.getScore()+ "    " );  
+					}
 				}
         }
     }
